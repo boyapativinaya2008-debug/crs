@@ -22,25 +22,50 @@ exports.register = async (req, res) => {
     res.status(500).json(err);
   }
 };
-
 exports.login = async (req, res) => {
+  console.log("🔥 LOGIN API CALLED");
+
   try {
     const { email, password } = req.body;
 
+    console.log("EMAIL:", email);
+    console.log("PASSWORD:", password);
+
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: "User not found" });
+    console.log("USER:", user);
+
+    if (!user) {
+      console.log("❌ USER NOT FOUND");
+      return res.status(400).json({ msg: "User not found" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: "Wrong password" });
+    console.log("MATCH:", isMatch);
+
+    if (!isMatch) {
+      console.log("❌ WRONG PASSWORD");
+      return res.status(400).json({ msg: "Wrong password" });
+    }
+
+    console.log("✅ BEFORE TOKEN");
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET
     );
 
-    res.json({ token, user });
+    console.log("✅ TOKEN CREATED");
+
+    return res.json({
+      message: "Login success",
+      token,
+      user
+    });
+
   } catch (err) {
-    res.status(500).json(err);
+    console.log("💥 ERROR:", err);
+    console.log("REAL ERROR 👉", err);
+    return res.status(500).json({ error: err.message });
   }
 };
 console.log("EXPORT TEST:", exports);

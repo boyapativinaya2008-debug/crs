@@ -20,9 +20,10 @@ console.log(test);
 // routes
 app.use("/api/auth", require("./routes/auth.route"));
 app.use("/api/complaints", require("./routes/complaint.route"));
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 
 // start server
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Server running on port " + (process.env.PORT || 3000));
 });
